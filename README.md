@@ -3,7 +3,8 @@ So.... obviously I've had a few roadbumps in trying to figure this out.  I don't
 My final will be an attempted clone of the Impossible Game, which you can try for free on most computer and mobile devices.  Flash version available at http://impossiblegame.org/the-impossible-game/ 
 While mine won't be as smooth or flashy, I hope to build up something with enough challenge and flair to get a good grade.  I really want to pass this class.
 I used your example code as a huge foundation to get myself off the ground and tinker with things to get a feel for the code.  My initial attempts weren't rendering objects properly so I needed something that worked to help me figure some things out.  I imagine I will move away from your code pretty quickly as some other imports may suit the design a little better in terms of implementation with the code.  We'll see as I tinker with it more this weekend.
-I am using an example I found online for inspiration that is written in JS.  I'm not sure how much help it will be, but I am mostly interested in getting help with the triangle generation and the math behind the spin of the square when the player hits the jump key.
+I am using an example I found online for inspiration that is written in JS.  It can be found at https://github.com/chikeichan/Impossible_Game_Clone  
+I'm not sure how much help it will be, but I am mostly interested in getting help with the triangle generation and the math behind the spin of the square when the player hits the jump key.
 
 In theory my final base game should be fairly short code, but the platform and spike generation is what will eat up a lot of lines.  I'm not sure if the Impossible Game generates obstacles at random or if it's all laid out by hand.  My understanding was it's a little bit of both.
 

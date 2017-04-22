@@ -1,0 +1,207 @@
+var _user$project$Main$view = function (model) {
+	return A2(
+		_elm_lang$svg$Svg$svg,
+		{
+			ctor: '::',
+			_0: _elm_lang$svg$Svg_Attributes$width('100%'),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$svg$Svg_Attributes$height('100%'),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$svg$Svg_Attributes$viewBox('0 0 500 100'),
+					_1: {ctor: '[]'}
+				}
+			}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$svg$Svg$rect,
+				{
+					ctor: '::',
+					_0: _elm_lang$svg$Svg_Attributes$x(
+						_elm_lang$core$Basics$toString(model.x + 100)),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$y(
+							_elm_lang$core$Basics$toString(model.y + 69.5)),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$width('22'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$height('22'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$svg$Svg_Attributes$stroke('orange'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$svg$Svg_Attributes$fill('orange'),
+										_1: {ctor: '[]'}
+									}
+								}
+							}
+						}
+					}
+				},
+				{ctor: '[]'}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$svg$Svg$line,
+					{
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$x1('0'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$y1('92'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$x2('500'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$svg$Svg_Attributes$y2('95'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$svg$Svg_Attributes$strokeWidth('2'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$svg$Svg_Attributes$stroke('gray'),
+											_1: {ctor: '[]'}
+										}
+									}
+								}
+							}
+						}
+					},
+					{ctor: '[]'}),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Main$floors = function (model) {
+	return (_elm_lang$core$Native_Utils.cmp(model.y, 0) < 0) ? _elm_lang$core$Native_Utils.update(
+		model,
+		{y: 0, vy: 0}) : model;
+};
+var _user$project$Main$motion = function (model) {
+	return _elm_lang$core$Native_Utils.update(
+		model,
+		{x: model.x + model.vx, y: model.y + model.vy});
+};
+var _user$project$Main$traction = function (model) {
+	return _elm_lang$core$Native_Utils.eq(model.y, 0) ? _elm_lang$core$Native_Utils.update(
+		model,
+		{vx: model.groundAcceleration}) : model;
+};
+var _user$project$Main$stop = F2(
+	function (compare, model) {
+		return A2(compare, model.groundAcceleration, 0) ? _elm_lang$core$Native_Utils.update(
+			model,
+			{groundAcceleration: 0}) : model;
+	});
+var _user$project$Main$accelerateTo = F2(
+	function (velocity, model) {
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{groundAcceleration: velocity});
+	});
+var _user$project$Main$jumpVelocity = 6;
+var _user$project$Main$jump = function (model) {
+	return _elm_lang$core$Native_Utils.eq(model.vy, 0) ? _elm_lang$core$Native_Utils.update(
+		model,
+		{vy: _user$project$Main$jumpVelocity}) : model;
+};
+var _user$project$Main$key = F2(
+	function (msg, model) {
+		return function () {
+			var _p0 = msg;
+			if ((_p0.ctor === 'KeyDown') && (_p0._0 === 32)) {
+				return _user$project$Main$jump;
+			} else {
+				return _elm_lang$core$Basics$identity;
+			}
+		}()(model);
+	});
+var _user$project$Main$gravityAcceleration = 0.3;
+var _user$project$Main$gravity = function (model) {
+	return _elm_lang$core$Native_Utils.update(
+		model,
+		{vy: model.vy - _user$project$Main$gravityAcceleration});
+};
+var _user$project$Main$tick = function (model) {
+	return _user$project$Main$floors(
+		_user$project$Main$motion(
+			_user$project$Main$gravity(
+				_user$project$Main$traction(model))));
+};
+var _user$project$Main$update = F2(
+	function (msg, model) {
+		var _p1 = msg;
+		if (_p1.ctor === 'Tick') {
+			return _user$project$Main$tick(model);
+		} else {
+			return A2(_user$project$Main$key, _p1._0, model);
+		}
+	});
+var _user$project$Main$updateWithCommand = F2(
+	function (msg, model) {
+		return {
+			ctor: '_Tuple2',
+			_0: A2(_user$project$Main$update, msg, model),
+			_1: _elm_lang$core$Platform_Cmd$none
+		};
+	});
+var _user$project$Main$initialModel = {x: 0, vx: 0, y: 0, vy: 0, groundAcceleration: 0};
+var _user$project$Main$Player = F2(
+	function (a, b) {
+		return {playerHeight: a, jumping: b};
+	});
+var _user$project$Main$Position = F2(
+	function (a, b) {
+		return {x: a, y: b};
+	});
+var _user$project$Main$Tick = function (a) {
+	return {ctor: 'Tick', _0: a};
+};
+var _user$project$Main$KeyMsg = function (a) {
+	return {ctor: 'KeyMsg', _0: a};
+};
+var _user$project$Main$KeyDown = function (a) {
+	return {ctor: 'KeyDown', _0: a};
+};
+var _user$project$Main$KeyUp = function (a) {
+	return {ctor: 'KeyUp', _0: a};
+};
+var _user$project$Main$subscriptions = function (model) {
+	return _elm_lang$core$Platform_Sub$batch(
+		{
+			ctor: '::',
+			_0: _elm_lang$keyboard$Keyboard$downs(
+				function (_p2) {
+					return _user$project$Main$KeyMsg(
+						_user$project$Main$KeyDown(_p2));
+				}),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$keyboard$Keyboard$ups(
+					function (_p3) {
+						return _user$project$Main$KeyMsg(
+							_user$project$Main$KeyUp(_p3));
+					}),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$animation_frame$AnimationFrame$diffs(_user$project$Main$Tick),
+					_1: {ctor: '[]'}
+				}
+			}
+		});
+};
+var _user$project$Main$main = _elm_lang$html$Html$program(
+	{
+		init: {ctor: '_Tuple2', _0: _user$project$Main$initialModel, _1: _elm_lang$core$Platform_Cmd$none},
+		view: _user$project$Main$view,
+		subscriptions: _user$project$Main$subscriptions,
+		update: _user$project$Main$updateWithCommand
+	})();

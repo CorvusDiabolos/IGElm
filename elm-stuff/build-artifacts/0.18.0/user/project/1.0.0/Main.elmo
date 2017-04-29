@@ -1,207 +1,384 @@
-var _user$project$Main$view = function (model) {
-	return A2(
-		_elm_lang$svg$Svg$svg,
-		{
+var _user$project$Main$containerStyle = {
+	ctor: '::',
+	_0: {ctor: '_Tuple2', _0: 'display', _1: 'flex'},
+	_1: {
+		ctor: '::',
+		_0: {ctor: '_Tuple2', _0: 'align-items', _1: 'center'},
+		_1: {
 			ctor: '::',
-			_0: _elm_lang$svg$Svg_Attributes$width('100%'),
+			_0: {ctor: '_Tuple2', _0: 'justify-content', _1: 'center'},
 			_1: {
 				ctor: '::',
-				_0: _elm_lang$svg$Svg_Attributes$height('100%'),
+				_0: {ctor: '_Tuple2', _0: 'height', _1: '100%'},
+				_1: {ctor: '[]'}
+			}
+		}
+	}
+};
+var _user$project$Main$maxJump = 270;
+var _user$project$Main$triangleSpeed = 11;
+var _user$project$Main$cubeAcceleration = 10;
+var _user$project$Main$cubeSize = 40;
+var _user$project$Main$platformSize = _user$project$Main$cubeSize;
+var _user$project$Main$triangleTriangle = function (triangle) {
+	var topPoint = A2(
+		_elm_lang$core$Basics_ops['++'],
+		_elm_lang$core$Basics$toString(_user$project$Main$cubeSize / 2),
+		',0');
+	var rightPoint = A2(
+		_elm_lang$core$Basics_ops['++'],
+		_elm_lang$core$Basics$toString(_user$project$Main$cubeSize),
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			',',
+			_elm_lang$core$Basics$toString(_user$project$Main$cubeSize)));
+	var leftPoint = A2(
+		_elm_lang$core$Basics_ops['++'],
+		'0,',
+		_elm_lang$core$Basics$toString(_user$project$Main$cubeSize));
+	var pointList = {
+		ctor: '::',
+		_0: leftPoint,
+		_1: {
+			ctor: '::',
+			_0: topPoint,
+			_1: {
+				ctor: '::',
+				_0: rightPoint,
+				_1: {ctor: '[]'}
+			}
+		}
+	};
+	return A2(
+		_elm_lang$svg$Svg$polygon,
+		{
+			ctor: '::',
+			_0: _elm_lang$svg$Svg_Attributes$width(
+				_elm_lang$core$Basics$toString(_user$project$Main$cubeSize)),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$svg$Svg_Attributes$height(
+					_elm_lang$core$Basics$toString(_user$project$Main$cubeSize)),
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$svg$Svg_Attributes$viewBox('0 0 500 100'),
-					_1: {ctor: '[]'}
+					_0: _elm_lang$svg$Svg_Attributes$fill('black'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$transform(
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								'translate(',
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									_elm_lang$core$Basics$toString(triangle.position.x),
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										',',
+										A2(
+											_elm_lang$core$Basics_ops['++'],
+											_elm_lang$core$Basics$toString(triangle.position.y),
+											')'))))),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$points(
+								A2(_elm_lang$core$String$join, ' ', pointList)),
+							_1: {ctor: '[]'}
+						}
+					}
 				}
 			}
+		},
+		{ctor: '[]'});
+};
+var _user$project$Main$cubeX = 200;
+var _user$project$Main$checkCollision = F2(
+	function (cube, triangle) {
+		var collisionY = (_elm_lang$core$Native_Utils.cmp(cube.cubeHeight + _user$project$Main$cubeSize, triangle.position.y) > 0) && (_elm_lang$core$Native_Utils.cmp(cube.cubeHeight, triangle.position.y + _user$project$Main$cubeSize) < 0);
+		var collisionX = (_elm_lang$core$Native_Utils.cmp(_user$project$Main$cubeX, triangle.position.x) > 0) && (_elm_lang$core$Native_Utils.cmp(_user$project$Main$cubeX, triangle.position.x + _user$project$Main$cubeSize) < 0);
+		return collisionX && collisionY;
+	});
+var _user$project$Main$cubeRect = function (cube) {
+	return A2(
+		_elm_lang$svg$Svg$rect,
+		{
+			ctor: '::',
+			_0: _elm_lang$svg$Svg_Attributes$width(
+				_elm_lang$core$Basics$toString(_user$project$Main$cubeSize)),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$svg$Svg_Attributes$height(
+					_elm_lang$core$Basics$toString(_user$project$Main$cubeSize)),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$svg$Svg_Attributes$fill('orange'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$y(
+							_elm_lang$core$Basics$toString(cube.cubeHeight)),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$x(
+								_elm_lang$core$Basics$toString(_user$project$Main$cubeX)),
+							_1: {ctor: '[]'}
+						}
+					}
+				}
+			}
+		},
+		{ctor: '[]'});
+};
+var _user$project$Main$screenX = 700;
+var _user$project$Main$screenY = 400;
+var _user$project$Main$floor = _user$project$Main$screenY - _user$project$Main$cubeSize;
+var _user$project$Main$addTriangle = function (triangles1) {
+	var triangles = A2(
+		_elm_lang$core$List$map,
+		function (triangle) {
+			return {
+				position: {x: triangle.position.x - _user$project$Main$triangleSpeed, y: triangle.position.y}
+			};
+		},
+		triangles1);
+	var previousTriangle = function () {
+		var _p0 = _elm_lang$core$List$head(triangles);
+		if (_p0.ctor === 'Nothing') {
+			return {
+				position: {x: 0, y: 0}
+			};
+		} else {
+			return _p0._0;
+		}
+	}();
+	var previousTriangleX = previousTriangle.position.x;
+	return (_elm_lang$core$Native_Utils.cmp(previousTriangleX, (_user$project$Main$screenX - _user$project$Main$cubeSize) - 400) < 0) ? A2(
+		_elm_lang$core$List$append,
+		{
+			ctor: '::',
+			_0: {
+				position: {x: _user$project$Main$screenX, y: _user$project$Main$floor}
+			},
+			_1: {ctor: '[]'}
+		},
+		triangles) : triangles;
+};
+var _user$project$Main$gameContainer = function (children) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$style(_user$project$Main$containerStyle),
+			_1: {ctor: '[]'}
 		},
 		{
 			ctor: '::',
 			_0: A2(
-				_elm_lang$svg$Svg$rect,
+				_elm_lang$svg$Svg$svg,
 				{
 					ctor: '::',
-					_0: _elm_lang$svg$Svg_Attributes$x(
-						_elm_lang$core$Basics$toString(model.x + 100)),
+					_0: _elm_lang$svg$Svg_Attributes$width(
+						_elm_lang$core$Basics$toString(_user$project$Main$screenX)),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$svg$Svg_Attributes$y(
-							_elm_lang$core$Basics$toString(model.y + 69.5)),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$svg$Svg_Attributes$width('22'),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$svg$Svg_Attributes$height('22'),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$svg$Svg_Attributes$stroke('orange'),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$svg$Svg_Attributes$fill('orange'),
-										_1: {ctor: '[]'}
-									}
-								}
-							}
-						}
+						_0: _elm_lang$svg$Svg_Attributes$height(
+							_elm_lang$core$Basics$toString(_user$project$Main$screenY)),
+						_1: {ctor: '[]'}
 					}
 				},
-				{ctor: '[]'}),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_elm_lang$svg$Svg$line,
+				_elm_lang$core$List$concat(
 					{
 						ctor: '::',
-						_0: _elm_lang$svg$Svg_Attributes$x1('0'),
-						_1: {
+						_0: {
 							ctor: '::',
-							_0: _elm_lang$svg$Svg_Attributes$y1('92'),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$svg$Svg_Attributes$x2('500'),
-								_1: {
+							_0: A2(
+								_elm_lang$svg$Svg$rect,
+								{
 									ctor: '::',
-									_0: _elm_lang$svg$Svg_Attributes$y2('95'),
+									_0: _elm_lang$svg$Svg_Attributes$width('100%'),
 									_1: {
 										ctor: '::',
-										_0: _elm_lang$svg$Svg_Attributes$strokeWidth('2'),
+										_0: _elm_lang$svg$Svg_Attributes$height('100%'),
 										_1: {
 											ctor: '::',
-											_0: _elm_lang$svg$Svg_Attributes$stroke('gray'),
+											_0: _elm_lang$svg$Svg_Attributes$fill('teal'),
 											_1: {ctor: '[]'}
 										}
 									}
+								},
+								{ctor: '[]'}),
+							_1: {ctor: '[]'}
+						},
+						_1: {
+							ctor: '::',
+							_0: children,
+							_1: {ctor: '[]'}
+						}
+					})),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Main$view = function (model) {
+	var _p1 = model;
+	if (_p1.ctor === 'InsertCoin') {
+		return _user$project$Main$gameContainer(
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$svg$Svg$text_,
+					{
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$x(
+							_elm_lang$core$Basics$toString(_user$project$Main$screenX / 2)),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$y(
+								_elm_lang$core$Basics$toString(_user$project$Main$screenY / 2)),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$fill('white'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$svg$Svg_Attributes$textAnchor('middle'),
+									_1: {ctor: '[]'}
 								}
 							}
 						}
 					},
-					{ctor: '[]'}),
+					{
+						ctor: '::',
+						_0: _elm_lang$svg$Svg$text('Press Spacebar to insert coin'),
+						_1: {ctor: '[]'}
+					}),
 				_1: {ctor: '[]'}
-			}
-		});
+			});
+	} else {
+		return _user$project$Main$gameContainer(
+			_elm_lang$core$List$concat(
+				{
+					ctor: '::',
+					_0: {
+						ctor: '::',
+						_0: _user$project$Main$cubeRect(_p1._0),
+						_1: {ctor: '[]'}
+					},
+					_1: {
+						ctor: '::',
+						_0: A2(_elm_lang$core$List$map, _user$project$Main$triangleTriangle, _p1._1),
+						_1: {ctor: '[]'}
+					}
+				}));
+	}
 };
-var _user$project$Main$floors = function (model) {
-	return (_elm_lang$core$Native_Utils.cmp(model.y, 0) < 0) ? _elm_lang$core$Native_Utils.update(
-		model,
-		{y: 0, vy: 0}) : model;
-};
-var _user$project$Main$motion = function (model) {
-	return _elm_lang$core$Native_Utils.update(
-		model,
-		{x: model.x + model.vx, y: model.y + model.vy});
-};
-var _user$project$Main$traction = function (model) {
-	return _elm_lang$core$Native_Utils.eq(model.y, 0) ? _elm_lang$core$Native_Utils.update(
-		model,
-		{vx: model.groundAcceleration}) : model;
-};
-var _user$project$Main$stop = F2(
-	function (compare, model) {
-		return A2(compare, model.groundAcceleration, 0) ? _elm_lang$core$Native_Utils.update(
-			model,
-			{groundAcceleration: 0}) : model;
-	});
-var _user$project$Main$accelerateTo = F2(
-	function (velocity, model) {
-		return _elm_lang$core$Native_Utils.update(
-			model,
-			{groundAcceleration: velocity});
-	});
-var _user$project$Main$jumpVelocity = 6;
-var _user$project$Main$jump = function (model) {
-	return _elm_lang$core$Native_Utils.eq(model.vy, 0) ? _elm_lang$core$Native_Utils.update(
-		model,
-		{vy: _user$project$Main$jumpVelocity}) : model;
-};
-var _user$project$Main$key = F2(
-	function (msg, model) {
-		return function () {
-			var _p0 = msg;
-			if ((_p0.ctor === 'KeyDown') && (_p0._0 === 32)) {
-				return _user$project$Main$jump;
-			} else {
-				return _elm_lang$core$Basics$identity;
-			}
-		}()(model);
-	});
-var _user$project$Main$gravityAcceleration = 0.3;
-var _user$project$Main$gravity = function (model) {
-	return _elm_lang$core$Native_Utils.update(
-		model,
-		{vy: model.vy - _user$project$Main$gravityAcceleration});
-};
-var _user$project$Main$tick = function (model) {
-	return _user$project$Main$floors(
-		_user$project$Main$motion(
-			_user$project$Main$gravity(
-				_user$project$Main$traction(model))));
-};
-var _user$project$Main$update = F2(
-	function (msg, model) {
-		var _p1 = msg;
-		if (_p1.ctor === 'Tick') {
-			return _user$project$Main$tick(model);
-		} else {
-			return A2(_user$project$Main$key, _p1._0, model);
-		}
-	});
-var _user$project$Main$updateWithCommand = F2(
-	function (msg, model) {
-		return {
-			ctor: '_Tuple2',
-			_0: A2(_user$project$Main$update, msg, model),
-			_1: _elm_lang$core$Platform_Cmd$none
-		};
-	});
-var _user$project$Main$initialModel = {x: 0, vx: 0, y: 0, vy: 0, groundAcceleration: 0};
-var _user$project$Main$Player = F2(
-	function (a, b) {
-		return {playerHeight: a, jumping: b};
-	});
 var _user$project$Main$Position = F2(
 	function (a, b) {
 		return {x: a, y: b};
 	});
+var _user$project$Main$Platform = function (a) {
+	return {platformHeight: a};
+};
+var _user$project$Main$Cube = F2(
+	function (a, b) {
+		return {cubeHeight: a, jumping: b};
+	});
+var _user$project$Main$Triangle = function (a) {
+	return {position: a};
+};
+var _user$project$Main$Started = F3(
+	function (a, b, c) {
+		return {ctor: 'Started', _0: a, _1: b, _2: c};
+	});
+var _user$project$Main$InsertCoin = function (a) {
+	return {ctor: 'InsertCoin', _0: a};
+};
+var _user$project$Main$init = {
+	ctor: '_Tuple2',
+	_0: _user$project$Main$InsertCoin(0),
+	_1: _elm_lang$core$Platform_Cmd$none
+};
+var _user$project$Main$update = F2(
+	function (msg, model) {
+		var _p2 = model;
+		if (_p2.ctor === 'InsertCoin') {
+			var _p3 = msg;
+			if (_p3.ctor === 'SpaceBar') {
+				return _elm_lang$core$Native_Utils.eq(_p3._0, 32) ? {
+					ctor: '_Tuple2',
+					_0: A3(
+						_user$project$Main$Started,
+						A2(_user$project$Main$Cube, _user$project$Main$floor, false),
+						{ctor: '[]'},
+						0),
+					_1: _elm_lang$core$Platform_Cmd$none
+				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			} else {
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			}
+		} else {
+			var _p7 = _p2._1;
+			var _p6 = _p2._2;
+			var _p5 = _p2._0;
+			var jumping = ((!_p5.jumping) || (_elm_lang$core$Native_Utils.cmp(_p5.cubeHeight, _user$project$Main$maxJump) < 1)) ? false : true;
+			var cubeHeight = _p5.cubeHeight;
+			var newHeight = jumping ? (cubeHeight - _user$project$Main$cubeAcceleration) : ((_elm_lang$core$Native_Utils.cmp(cubeHeight, _user$project$Main$floor) < 0) ? (cubeHeight + _user$project$Main$cubeAcceleration) : cubeHeight);
+			var checkCubeCollision = _user$project$Main$checkCollision(_p5);
+			var collisions = A2(_elm_lang$core$List$map, checkCubeCollision, _p7);
+			var isGameOver = A2(_elm_lang$core$List$member, true, collisions);
+			var _p4 = msg;
+			switch (_p4.ctor) {
+				case 'Tick':
+					return isGameOver ? {
+						ctor: '_Tuple2',
+						_0: _user$project$Main$InsertCoin(_p6),
+						_1: _elm_lang$core$Platform_Cmd$none
+					} : {
+						ctor: '_Tuple2',
+						_0: A3(
+							_user$project$Main$Started,
+							_elm_lang$core$Native_Utils.update(
+								_p5,
+								{cubeHeight: newHeight, jumping: jumping}),
+							_user$project$Main$addTriangle(_p7),
+							_p6 + 1),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				case 'SpaceBar':
+					return (_elm_lang$core$Native_Utils.eq(_p4._0, 32) && _elm_lang$core$Native_Utils.eq(cubeHeight, _user$project$Main$floor)) ? {
+						ctor: '_Tuple2',
+						_0: A3(
+							_user$project$Main$Started,
+							_elm_lang$core$Native_Utils.update(
+								_p5,
+								{jumping: true}),
+							_p7,
+							_p6),
+						_1: _elm_lang$core$Platform_Cmd$none
+					} : {
+						ctor: '_Tuple2',
+						_0: A3(_user$project$Main$Started, _p5, _p7, _p6),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				default:
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			}
+		}
+	});
+var _user$project$Main$AddTriangle = {ctor: 'AddTriangle'};
+var _user$project$Main$SpaceBar = function (a) {
+	return {ctor: 'SpaceBar', _0: a};
+};
 var _user$project$Main$Tick = function (a) {
 	return {ctor: 'Tick', _0: a};
-};
-var _user$project$Main$KeyMsg = function (a) {
-	return {ctor: 'KeyMsg', _0: a};
-};
-var _user$project$Main$KeyDown = function (a) {
-	return {ctor: 'KeyDown', _0: a};
-};
-var _user$project$Main$KeyUp = function (a) {
-	return {ctor: 'KeyUp', _0: a};
 };
 var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$batch(
 		{
 			ctor: '::',
-			_0: _elm_lang$keyboard$Keyboard$downs(
-				function (_p2) {
-					return _user$project$Main$KeyMsg(
-						_user$project$Main$KeyDown(_p2));
-				}),
+			_0: _elm_lang$keyboard$Keyboard$presses(_user$project$Main$SpaceBar),
 			_1: {
 				ctor: '::',
-				_0: _elm_lang$keyboard$Keyboard$ups(
-					function (_p3) {
-						return _user$project$Main$KeyMsg(
-							_user$project$Main$KeyUp(_p3));
-					}),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$animation_frame$AnimationFrame$diffs(_user$project$Main$Tick),
-					_1: {ctor: '[]'}
-				}
+				_0: A2(_elm_lang$core$Time$every, _elm_lang$core$Time$millisecond * 20, _user$project$Main$Tick),
+				_1: {ctor: '[]'}
 			}
 		});
 };
 var _user$project$Main$main = _elm_lang$html$Html$program(
-	{
-		init: {ctor: '_Tuple2', _0: _user$project$Main$initialModel, _1: _elm_lang$core$Platform_Cmd$none},
-		view: _user$project$Main$view,
-		subscriptions: _user$project$Main$subscriptions,
-		update: _user$project$Main$updateWithCommand
-	})();
+	{init: _user$project$Main$init, view: _user$project$Main$view, update: _user$project$Main$update, subscriptions: _user$project$Main$subscriptions})();

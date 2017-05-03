@@ -9355,6 +9355,10 @@ var _xarvh$elm_audio$Main$containerStyle = {
 		}
 	}
 };
+var _xarvh$elm_audio$Main$playbackOptions = _elm_lang$core$Native_Utils.update(
+	_xarvh$elm_audio$Audio$defaultPlaybackOptions,
+	{loop: true, startAt: _elm_lang$core$Maybe$Nothing});
+var _xarvh$elm_audio$Main$loadSound = _xarvh$elm_audio$Audio$loadSound('music/The Impossible Game Soundtrack.mp3');
 var _xarvh$elm_audio$Main$maxJump = 260;
 var _xarvh$elm_audio$Main$triangleSpeed = 11;
 var _xarvh$elm_audio$Main$cubeAcceleration = 10;
@@ -9767,6 +9771,13 @@ var _xarvh$elm_audio$Main$update = F2(
 			}
 		}
 	});
+var _xarvh$elm_audio$Main$Noop = {ctor: 'Noop'};
+var _xarvh$elm_audio$Main$Error = function (a) {
+	return {ctor: 'Error', _0: a};
+};
+var _xarvh$elm_audio$Main$MusicLoaded = function (a) {
+	return {ctor: 'MusicLoaded', _0: a};
+};
 var _xarvh$elm_audio$Main$AddTriangle = {ctor: 'AddTriangle'};
 var _xarvh$elm_audio$Main$SpaceBar = function (a) {
 	return {ctor: 'SpaceBar', _0: a};

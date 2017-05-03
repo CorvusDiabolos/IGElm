@@ -9220,7 +9220,125 @@ var _elm_lang$svg$Svg_Attributes$additive = _elm_lang$virtual_dom$VirtualDom$att
 var _elm_lang$svg$Svg_Attributes$accumulate = _elm_lang$virtual_dom$VirtualDom$attribute('accumulate');
 var _elm_lang$svg$Svg_Attributes$accelerate = _elm_lang$virtual_dom$VirtualDom$attribute('accelerate');
 var _elm_lang$svg$Svg_Attributes$accentHeight = _elm_lang$virtual_dom$VirtualDom$attribute('accent-height');
-var _user$project$Main$containerStyle = {
+var _xarvh$elm_audio$Native_Audio = function() {
+
+
+  var Task = _elm_lang$core$Native_Scheduler;
+
+
+  function loadSound(source) {
+    return Task.nativeBinding(function (callback) {
+
+      if (typeof Audio === 'undefined') {
+        return callback(Task.fail('The browser does not support HTML5 Audio'));
+      }
+
+      var audio = new Audio();
+      audio.preload = 'auto';
+
+      function oncanplaythrough() {
+        // `canplaythrough` triggers also when audio.currentTime is assigned
+        audio.removeEventListener('canplaythrough', oncanplaythrough, false);
+
+        var elmSound = { ctor: 'Sound', src: source };
+
+        // define audio as non-enumerable property to allow comparison and stringification
+        Object.defineProperty(elmSound, 'audio', { value: audio });
+
+        callback(Task.succeed(elmSound));
+      };
+
+      function onerror(/* event */) {
+        callback(Task.fail('Unable to load ' + source));
+      };
+
+      audio.addEventListener('canplaythrough', oncanplaythrough, false);
+      audio.addEventListener('error', onerror, false);
+      audio.src = source;
+      audio.load();
+    });
+  }
+
+
+  function playSound(options, sound) {
+    return Task.nativeBinding(function (callback) {
+      var audio = sound.audio;
+
+      audio.loop = options.loop;
+
+      if (!(options.volume >= 0 && options.volume <= 1)) {
+        return callback(Task.fail('volume should be within 0 and 1, but is ' + options.volume));
+      }
+      audio.volume = options.volume;
+
+      if (options.startAt.ctor === 'Just') {
+        var startAt = options.startAt._0;
+        if (!(startAt >= 0 && isFinite(startAt))) {
+          return callback(Task.fail('startAt should be finite and positive, but is ' + startAt));
+        }
+        audio.currentTime = options.startAt._0;
+      }
+
+      function onended() {
+        callback(Task.succeed());
+      };
+
+      audio.addEventListener('ended', onended, false);
+      audio.play();
+    });
+  }
+
+
+  function stopSound(sound) {
+    return Task.nativeBinding(function (callback) {
+      sound.audio.pause();
+      callback(Task.succeed());
+    });
+  }
+
+
+  return {
+    loadSound: loadSound,
+    playSound: F2(playSound),
+    stopSound: stopSound,
+  };
+}();
+var _xarvh$elm_audio$Audio$stopSound = _xarvh$elm_audio$Native_Audio.stopSound;
+var _xarvh$elm_audio$Audio$playSound = _xarvh$elm_audio$Native_Audio.playSound;
+var _xarvh$elm_audio$Audio$loadSound = _xarvh$elm_audio$Native_Audio.loadSound;
+var _xarvh$elm_audio$Audio$PlaybackOptions = F3(
+	function (a, b, c) {
+		return {volume: a, startAt: b, loop: c};
+	});
+var _xarvh$elm_audio$Audio$defaultPlaybackOptions = A3(
+	_xarvh$elm_audio$Audio$PlaybackOptions,
+	1.0,
+	_elm_lang$core$Maybe$Just(0.0),
+	false);
+var _xarvh$elm_audio$Audio$Sound = {ctor: 'Sound'};
+var _xarvh$elm_audio$Main$getRotation = F3(
+	function (deg, x, y) {
+		return A2(
+			_elm_lang$core$Basics_ops['++'],
+			'rotate(',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				_elm_lang$core$Basics$toString(deg),
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					' ',
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						_elm_lang$core$Basics$toString(x),
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							' ',
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								_elm_lang$core$Basics$toString(y),
+								')'))))));
+	});
+var _xarvh$elm_audio$Main$containerStyle = {
 	ctor: '::',
 	_0: {ctor: '_Tuple2', _0: 'display', _1: 'flex'},
 	_1: {
@@ -9237,27 +9355,27 @@ var _user$project$Main$containerStyle = {
 		}
 	}
 };
-var _user$project$Main$maxJump = 270;
-var _user$project$Main$triangleSpeed = 11;
-var _user$project$Main$cubeAcceleration = 10;
-var _user$project$Main$cubeSize = 40;
-var _user$project$Main$platformSize = _user$project$Main$cubeSize;
-var _user$project$Main$triangleTriangle = function (triangle) {
+var _xarvh$elm_audio$Main$maxJump = 260;
+var _xarvh$elm_audio$Main$triangleSpeed = 11;
+var _xarvh$elm_audio$Main$cubeAcceleration = 10;
+var _xarvh$elm_audio$Main$cubeSize = 40;
+var _xarvh$elm_audio$Main$platformSize = _xarvh$elm_audio$Main$cubeSize;
+var _xarvh$elm_audio$Main$triangleTriangle = function (triangle) {
 	var topPoint = A2(
 		_elm_lang$core$Basics_ops['++'],
-		_elm_lang$core$Basics$toString(_user$project$Main$cubeSize / 2),
+		_elm_lang$core$Basics$toString(_xarvh$elm_audio$Main$cubeSize / 2),
 		',0');
 	var rightPoint = A2(
 		_elm_lang$core$Basics_ops['++'],
-		_elm_lang$core$Basics$toString(_user$project$Main$cubeSize),
+		_elm_lang$core$Basics$toString(_xarvh$elm_audio$Main$cubeSize),
 		A2(
 			_elm_lang$core$Basics_ops['++'],
 			',',
-			_elm_lang$core$Basics$toString(_user$project$Main$cubeSize)));
+			_elm_lang$core$Basics$toString(_xarvh$elm_audio$Main$cubeSize)));
 	var leftPoint = A2(
 		_elm_lang$core$Basics_ops['++'],
 		'0,',
-		_elm_lang$core$Basics$toString(_user$project$Main$cubeSize));
+		_elm_lang$core$Basics$toString(_xarvh$elm_audio$Main$cubeSize));
 	var pointList = {
 		ctor: '::',
 		_0: leftPoint,
@@ -9276,35 +9394,39 @@ var _user$project$Main$triangleTriangle = function (triangle) {
 		{
 			ctor: '::',
 			_0: _elm_lang$svg$Svg_Attributes$width(
-				_elm_lang$core$Basics$toString(_user$project$Main$cubeSize)),
+				_elm_lang$core$Basics$toString(_xarvh$elm_audio$Main$cubeSize)),
 			_1: {
 				ctor: '::',
 				_0: _elm_lang$svg$Svg_Attributes$height(
-					_elm_lang$core$Basics$toString(_user$project$Main$cubeSize)),
+					_elm_lang$core$Basics$toString(_xarvh$elm_audio$Main$cubeSize)),
 				_1: {
 					ctor: '::',
 					_0: _elm_lang$svg$Svg_Attributes$fill('black'),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$svg$Svg_Attributes$transform(
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								'translate(',
+						_0: _elm_lang$svg$Svg_Attributes$stroke('white'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$transform(
 								A2(
 									_elm_lang$core$Basics_ops['++'],
-									_elm_lang$core$Basics$toString(triangle.position.x),
+									'translate(',
 									A2(
 										_elm_lang$core$Basics_ops['++'],
-										',',
+										_elm_lang$core$Basics$toString(triangle.position.x),
 										A2(
 											_elm_lang$core$Basics_ops['++'],
-											_elm_lang$core$Basics$toString(triangle.position.y),
-											')'))))),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$svg$Svg_Attributes$points(
-								A2(_elm_lang$core$String$join, ' ', pointList)),
-							_1: {ctor: '[]'}
+											',',
+											A2(
+												_elm_lang$core$Basics_ops['++'],
+												_elm_lang$core$Basics$toString(triangle.position.y),
+												')'))))),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$points(
+									A2(_elm_lang$core$String$join, ' ', pointList)),
+								_1: {ctor: '[]'}
+							}
 						}
 					}
 				}
@@ -9312,52 +9434,22 @@ var _user$project$Main$triangleTriangle = function (triangle) {
 		},
 		{ctor: '[]'});
 };
-var _user$project$Main$cubeX = 200;
-var _user$project$Main$checkCollision = F2(
+var _xarvh$elm_audio$Main$cubeX = 200;
+var _xarvh$elm_audio$Main$checkCollision = F2(
 	function (cube, triangle) {
-		var collisionY = (_elm_lang$core$Native_Utils.cmp(cube.cubeHeight + _user$project$Main$cubeSize, triangle.position.y) > 0) && (_elm_lang$core$Native_Utils.cmp(cube.cubeHeight, triangle.position.y + _user$project$Main$cubeSize) < 0);
-		var collisionX = (_elm_lang$core$Native_Utils.cmp(_user$project$Main$cubeX, triangle.position.x) > 0) && (_elm_lang$core$Native_Utils.cmp(_user$project$Main$cubeX, triangle.position.x + _user$project$Main$cubeSize) < 0);
+		var collisionY = (_elm_lang$core$Native_Utils.cmp(cube.cubeHeight + _xarvh$elm_audio$Main$cubeSize, triangle.position.y) > 0) && (_elm_lang$core$Native_Utils.cmp(cube.cubeHeight, triangle.position.y + _xarvh$elm_audio$Main$cubeSize) < 0);
+		var collisionX = (_elm_lang$core$Native_Utils.cmp(_xarvh$elm_audio$Main$cubeX, triangle.position.x) > 0) && (_elm_lang$core$Native_Utils.cmp(_xarvh$elm_audio$Main$cubeX, triangle.position.x + _xarvh$elm_audio$Main$cubeSize) < 0);
 		return collisionX && collisionY;
 	});
-var _user$project$Main$cubeRect = function (cube) {
-	return A2(
-		_elm_lang$svg$Svg$rect,
-		{
-			ctor: '::',
-			_0: _elm_lang$svg$Svg_Attributes$width(
-				_elm_lang$core$Basics$toString(_user$project$Main$cubeSize)),
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$svg$Svg_Attributes$height(
-					_elm_lang$core$Basics$toString(_user$project$Main$cubeSize)),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$svg$Svg_Attributes$fill('orange'),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$svg$Svg_Attributes$y(
-							_elm_lang$core$Basics$toString(cube.cubeHeight)),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$svg$Svg_Attributes$x(
-								_elm_lang$core$Basics$toString(_user$project$Main$cubeX)),
-							_1: {ctor: '[]'}
-						}
-					}
-				}
-			}
-		},
-		{ctor: '[]'});
-};
-var _user$project$Main$screenX = 700;
-var _user$project$Main$screenY = 400;
-var _user$project$Main$floor = _user$project$Main$screenY - _user$project$Main$cubeSize;
-var _user$project$Main$addTriangle = function (triangles1) {
+var _xarvh$elm_audio$Main$screenX = 700;
+var _xarvh$elm_audio$Main$screenY = 400;
+var _xarvh$elm_audio$Main$floor = _xarvh$elm_audio$Main$screenY - _xarvh$elm_audio$Main$cubeSize;
+var _xarvh$elm_audio$Main$addTriangle = function (triangles1) {
 	var triangles = A2(
 		_elm_lang$core$List$map,
 		function (triangle) {
 			return {
-				position: {x: triangle.position.x - _user$project$Main$triangleSpeed, y: triangle.position.y}
+				position: {x: triangle.position.x - _xarvh$elm_audio$Main$triangleSpeed, y: triangle.position.y}
 			};
 		},
 		triangles1);
@@ -9372,23 +9464,66 @@ var _user$project$Main$addTriangle = function (triangles1) {
 		}
 	}();
 	var previousTriangleX = previousTriangle.position.x;
-	return (_elm_lang$core$Native_Utils.cmp(previousTriangleX, (_user$project$Main$screenX - _user$project$Main$cubeSize) - 400) < 0) ? A2(
+	return (_elm_lang$core$Native_Utils.cmp(previousTriangleX, (_xarvh$elm_audio$Main$screenX - _xarvh$elm_audio$Main$cubeSize) - 400) < 0) ? A2(
 		_elm_lang$core$List$append,
 		{
 			ctor: '::',
 			_0: {
-				position: {x: _user$project$Main$screenX, y: _user$project$Main$floor}
+				position: {x: _xarvh$elm_audio$Main$screenX, y: _xarvh$elm_audio$Main$floor}
 			},
 			_1: {ctor: '[]'}
 		},
-		triangles) : triangles;
+		triangles1) : triangles;
 };
-var _user$project$Main$gameContainer = function (children) {
+var _xarvh$elm_audio$Main$cubeRect = function (cube) {
+	var rotationValue = (90 / (_xarvh$elm_audio$Main$floor - _xarvh$elm_audio$Main$maxJump)) * (_xarvh$elm_audio$Main$floor - cube.cubeHeight);
+	var rotation = cube.jumping ? rotationValue : (0 - rotationValue);
+	var cubeCenterY = cube.cubeHeight + (_xarvh$elm_audio$Main$cubeSize / 2);
+	var cubeCenterX = _xarvh$elm_audio$Main$cubeX + (_xarvh$elm_audio$Main$cubeSize / 2);
+	return A2(
+		_elm_lang$svg$Svg$rect,
+		{
+			ctor: '::',
+			_0: _elm_lang$svg$Svg_Attributes$width(
+				_elm_lang$core$Basics$toString(_xarvh$elm_audio$Main$cubeSize)),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$svg$Svg_Attributes$height(
+					_elm_lang$core$Basics$toString(_xarvh$elm_audio$Main$cubeSize)),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$svg$Svg_Attributes$fill('orange'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$stroke('black'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$transform(
+								A3(_xarvh$elm_audio$Main$getRotation, rotation, cubeCenterX, cubeCenterY)),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$y(
+									_elm_lang$core$Basics$toString(cube.cubeHeight)),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$svg$Svg_Attributes$x(
+										_elm_lang$core$Basics$toString(_xarvh$elm_audio$Main$cubeX)),
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		{ctor: '[]'});
+};
+var _xarvh$elm_audio$Main$gameContainer = function (children) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$style(_user$project$Main$containerStyle),
+			_0: _elm_lang$html$Html_Attributes$style(_xarvh$elm_audio$Main$containerStyle),
 			_1: {ctor: '[]'}
 		},
 		{
@@ -9398,12 +9533,16 @@ var _user$project$Main$gameContainer = function (children) {
 				{
 					ctor: '::',
 					_0: _elm_lang$svg$Svg_Attributes$width(
-						_elm_lang$core$Basics$toString(_user$project$Main$screenX)),
+						_elm_lang$core$Basics$toString(_xarvh$elm_audio$Main$screenX)),
 					_1: {
 						ctor: '::',
 						_0: _elm_lang$svg$Svg_Attributes$height(
-							_elm_lang$core$Basics$toString(_user$project$Main$screenY)),
-						_1: {ctor: '[]'}
+							_elm_lang$core$Basics$toString(_xarvh$elm_audio$Main$screenY)),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$fontFamily('Courier New'),
+							_1: {ctor: '[]'}
+						}
 					}
 				},
 				_elm_lang$core$List$concat(
@@ -9438,10 +9577,44 @@ var _user$project$Main$gameContainer = function (children) {
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$Main$view = function (model) {
+var _xarvh$elm_audio$Main$scoreText = F2(
+	function (score, started) {
+		var yVal = started ? _elm_lang$core$Basics$toString(20) : _elm_lang$core$Basics$toString((_xarvh$elm_audio$Main$screenY / 2) + 50);
+		var xVal = started ? _elm_lang$core$Basics$toString(10) : _elm_lang$core$Basics$toString(_xarvh$elm_audio$Main$screenX / 2);
+		var anchor = started ? 'start' : 'middle';
+		return A2(
+			_elm_lang$svg$Svg$text_,
+			{
+				ctor: '::',
+				_0: _elm_lang$svg$Svg_Attributes$x(xVal),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$svg$Svg_Attributes$y(yVal),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$textAnchor(anchor),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$fill('white'),
+							_1: {ctor: '[]'}
+						}
+					}
+				}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$svg$Svg$text(
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						'Score: ',
+						_elm_lang$core$Basics$toString(score))),
+				_1: {ctor: '[]'}
+			});
+	});
+var _xarvh$elm_audio$Main$view = function (model) {
 	var _p1 = model;
 	if (_p1.ctor === 'InsertCoin') {
-		return _user$project$Main$gameContainer(
+		return _xarvh$elm_audio$Main$gameContainer(
 			{
 				ctor: '::',
 				_0: A2(
@@ -9449,11 +9622,11 @@ var _user$project$Main$view = function (model) {
 					{
 						ctor: '::',
 						_0: _elm_lang$svg$Svg_Attributes$x(
-							_elm_lang$core$Basics$toString(_user$project$Main$screenX / 2)),
+							_elm_lang$core$Basics$toString(_xarvh$elm_audio$Main$screenX / 2)),
 						_1: {
 							ctor: '::',
 							_0: _elm_lang$svg$Svg_Attributes$y(
-								_elm_lang$core$Basics$toString(_user$project$Main$screenY / 2)),
+								_elm_lang$core$Basics$toString(_xarvh$elm_audio$Main$screenY / 2)),
 							_1: {
 								ctor: '::',
 								_0: _elm_lang$svg$Svg_Attributes$fill('white'),
@@ -9467,81 +9640,92 @@ var _user$project$Main$view = function (model) {
 					},
 					{
 						ctor: '::',
-						_0: _elm_lang$svg$Svg$text('Press Spacebar to insert coin'),
+						_0: _elm_lang$svg$Svg$text('Press Spacebar to insert coin or jump'),
 						_1: {ctor: '[]'}
 					}),
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: A2(_xarvh$elm_audio$Main$scoreText, _p1._0, false),
+					_1: {ctor: '[]'}
+				}
 			});
 	} else {
-		return _user$project$Main$gameContainer(
+		return _xarvh$elm_audio$Main$gameContainer(
 			_elm_lang$core$List$concat(
 				{
 					ctor: '::',
 					_0: {
 						ctor: '::',
-						_0: _user$project$Main$cubeRect(_p1._0),
-						_1: {ctor: '[]'}
+						_0: _xarvh$elm_audio$Main$cubeRect(_p1._0),
+						_1: {
+							ctor: '::',
+							_0: A2(_xarvh$elm_audio$Main$scoreText, _p1._2, true),
+							_1: {ctor: '[]'}
+						}
 					},
 					_1: {
 						ctor: '::',
-						_0: A2(_elm_lang$core$List$map, _user$project$Main$triangleTriangle, _p1._1),
+						_0: A2(_elm_lang$core$List$map, _xarvh$elm_audio$Main$triangleTriangle, _p1._1),
 						_1: {ctor: '[]'}
 					}
 				}));
 	}
 };
-var _user$project$Main$Position = F2(
+var _xarvh$elm_audio$Main$Position = F2(
 	function (a, b) {
 		return {x: a, y: b};
 	});
-var _user$project$Main$Platform = function (a) {
+var _xarvh$elm_audio$Main$Platform = function (a) {
 	return {platformHeight: a};
 };
-var _user$project$Main$Cube = F2(
+var _xarvh$elm_audio$Main$Cube = F2(
 	function (a, b) {
 		return {cubeHeight: a, jumping: b};
 	});
-var _user$project$Main$Triangle = function (a) {
+var _xarvh$elm_audio$Main$Triangle = function (a) {
 	return {position: a};
 };
-var _user$project$Main$Started = F3(
+var _xarvh$elm_audio$Main$Started = F3(
 	function (a, b, c) {
 		return {ctor: 'Started', _0: a, _1: b, _2: c};
 	});
-var _user$project$Main$InsertCoin = function (a) {
+var _xarvh$elm_audio$Main$InsertCoin = function (a) {
 	return {ctor: 'InsertCoin', _0: a};
 };
-var _user$project$Main$init = {
+var _xarvh$elm_audio$Main$init = {
 	ctor: '_Tuple2',
-	_0: _user$project$Main$InsertCoin(0),
+	_0: _xarvh$elm_audio$Main$InsertCoin(0),
 	_1: _elm_lang$core$Platform_Cmd$none
 };
-var _user$project$Main$update = F2(
+var _xarvh$elm_audio$Main$update = F2(
 	function (msg, model) {
 		var _p2 = model;
 		if (_p2.ctor === 'InsertCoin') {
 			var _p3 = msg;
-			if (_p3.ctor === 'SpaceBar') {
-				return _elm_lang$core$Native_Utils.eq(_p3._0, 32) ? {
-					ctor: '_Tuple2',
-					_0: A3(
-						_user$project$Main$Started,
-						A2(_user$project$Main$Cube, _user$project$Main$floor, false),
-						{ctor: '[]'},
-						0),
-					_1: _elm_lang$core$Platform_Cmd$none
-				} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			} else {
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			switch (_p3.ctor) {
+				case 'Tick':
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				case 'SpaceBar':
+					return _elm_lang$core$Native_Utils.eq(_p3._0, 32) ? {
+						ctor: '_Tuple2',
+						_0: A3(
+							_xarvh$elm_audio$Main$Started,
+							A2(_xarvh$elm_audio$Main$Cube, _xarvh$elm_audio$Main$floor, false),
+							{ctor: '[]'},
+							0),
+						_1: _elm_lang$core$Platform_Cmd$none
+					} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				default:
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			}
 		} else {
 			var _p7 = _p2._1;
 			var _p6 = _p2._2;
 			var _p5 = _p2._0;
-			var jumping = ((!_p5.jumping) || (_elm_lang$core$Native_Utils.cmp(_p5.cubeHeight, _user$project$Main$maxJump) < 1)) ? false : true;
+			var jumping = ((!_p5.jumping) || (_elm_lang$core$Native_Utils.cmp(_p5.cubeHeight, _xarvh$elm_audio$Main$maxJump) < 1)) ? false : true;
 			var cubeHeight = _p5.cubeHeight;
-			var newHeight = jumping ? (cubeHeight - _user$project$Main$cubeAcceleration) : ((_elm_lang$core$Native_Utils.cmp(cubeHeight, _user$project$Main$floor) < 0) ? (cubeHeight + _user$project$Main$cubeAcceleration) : cubeHeight);
-			var checkCubeCollision = _user$project$Main$checkCollision(_p5);
+			var newHeight = jumping ? (cubeHeight - _xarvh$elm_audio$Main$cubeAcceleration) : ((_elm_lang$core$Native_Utils.cmp(cubeHeight, _xarvh$elm_audio$Main$floor) < 0) ? (cubeHeight + _xarvh$elm_audio$Main$cubeAcceleration) : cubeHeight);
+			var checkCubeCollision = _xarvh$elm_audio$Main$checkCollision(_p5);
 			var collisions = A2(_elm_lang$core$List$map, checkCubeCollision, _p7);
 			var isGameOver = A2(_elm_lang$core$List$member, true, collisions);
 			var _p4 = msg;
@@ -9549,24 +9733,24 @@ var _user$project$Main$update = F2(
 				case 'Tick':
 					return isGameOver ? {
 						ctor: '_Tuple2',
-						_0: _user$project$Main$InsertCoin(_p6),
+						_0: _xarvh$elm_audio$Main$InsertCoin(_p6),
 						_1: _elm_lang$core$Platform_Cmd$none
 					} : {
 						ctor: '_Tuple2',
 						_0: A3(
-							_user$project$Main$Started,
+							_xarvh$elm_audio$Main$Started,
 							_elm_lang$core$Native_Utils.update(
 								_p5,
 								{cubeHeight: newHeight, jumping: jumping}),
-							_user$project$Main$addTriangle(_p7),
+							_xarvh$elm_audio$Main$addTriangle(_p7),
 							_p6 + 1),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				case 'SpaceBar':
-					return (_elm_lang$core$Native_Utils.eq(_p4._0, 32) && _elm_lang$core$Native_Utils.eq(cubeHeight, _user$project$Main$floor)) ? {
+					return (_elm_lang$core$Native_Utils.eq(_p4._0, 32) && _elm_lang$core$Native_Utils.eq(cubeHeight, _xarvh$elm_audio$Main$floor)) ? {
 						ctor: '_Tuple2',
 						_0: A3(
-							_user$project$Main$Started,
+							_xarvh$elm_audio$Main$Started,
 							_elm_lang$core$Native_Utils.update(
 								_p5,
 								{jumping: true}),
@@ -9575,7 +9759,7 @@ var _user$project$Main$update = F2(
 						_1: _elm_lang$core$Platform_Cmd$none
 					} : {
 						ctor: '_Tuple2',
-						_0: A3(_user$project$Main$Started, _p5, _p7, _p6),
+						_0: A3(_xarvh$elm_audio$Main$Started, _p5, _p7, _p6),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				default:
@@ -9583,31 +9767,31 @@ var _user$project$Main$update = F2(
 			}
 		}
 	});
-var _user$project$Main$AddTriangle = {ctor: 'AddTriangle'};
-var _user$project$Main$SpaceBar = function (a) {
+var _xarvh$elm_audio$Main$AddTriangle = {ctor: 'AddTriangle'};
+var _xarvh$elm_audio$Main$SpaceBar = function (a) {
 	return {ctor: 'SpaceBar', _0: a};
 };
-var _user$project$Main$Tick = function (a) {
+var _xarvh$elm_audio$Main$Tick = function (a) {
 	return {ctor: 'Tick', _0: a};
 };
-var _user$project$Main$subscriptions = function (model) {
+var _xarvh$elm_audio$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$batch(
 		{
 			ctor: '::',
-			_0: _elm_lang$keyboard$Keyboard$presses(_user$project$Main$SpaceBar),
+			_0: _elm_lang$keyboard$Keyboard$presses(_xarvh$elm_audio$Main$SpaceBar),
 			_1: {
 				ctor: '::',
-				_0: A2(_elm_lang$core$Time$every, _elm_lang$core$Time$millisecond * 20, _user$project$Main$Tick),
+				_0: A2(_elm_lang$core$Time$every, _elm_lang$core$Time$millisecond * 20, _xarvh$elm_audio$Main$Tick),
 				_1: {ctor: '[]'}
 			}
 		});
 };
-var _user$project$Main$main = _elm_lang$html$Html$program(
-	{init: _user$project$Main$init, view: _user$project$Main$view, update: _user$project$Main$update, subscriptions: _user$project$Main$subscriptions})();
+var _xarvh$elm_audio$Main$main = _elm_lang$html$Html$program(
+	{init: _xarvh$elm_audio$Main$init, view: _xarvh$elm_audio$Main$view, update: _xarvh$elm_audio$Main$update, subscriptions: _xarvh$elm_audio$Main$subscriptions})();
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
-if (typeof _user$project$Main$main !== 'undefined') {
-    _user$project$Main$main(Elm['Main'], 'Main', undefined);
+if (typeof _xarvh$elm_audio$Main$main !== 'undefined') {
+    _xarvh$elm_audio$Main$main(Elm['Main'], 'Main', undefined);
 }
 
 if (typeof define === "function" && define['amd'])

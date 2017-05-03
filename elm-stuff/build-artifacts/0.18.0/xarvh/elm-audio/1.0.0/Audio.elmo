@@ -1,0 +1,13 @@
+var _xarvh$elm_audio$Audio$stopSound = _xarvh$elm_audio$Native_Audio.stopSound;
+var _xarvh$elm_audio$Audio$playSound = _xarvh$elm_audio$Native_Audio.playSound;
+var _xarvh$elm_audio$Audio$loadSound = _xarvh$elm_audio$Native_Audio.loadSound;
+var _xarvh$elm_audio$Audio$PlaybackOptions = F3(
+	function (a, b, c) {
+		return {volume: a, startAt: b, loop: c};
+	});
+var _xarvh$elm_audio$Audio$defaultPlaybackOptions = A3(
+	_xarvh$elm_audio$Audio$PlaybackOptions,
+	1.0,
+	_elm_lang$core$Maybe$Just(0.0),
+	false);
+var _xarvh$elm_audio$Audio$Sound = {ctor: 'Sound'};
